@@ -1,10 +1,12 @@
 package org.example;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-
+        test();
     }
 
     enum DayOfWeek {
@@ -35,13 +37,21 @@ public class Main {
         }
     }
 
-    void test() {
+    static void test() {
         var denSheet = new WorkSheet("Денис", List.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SUNDAY));
         var benSheet = new WorkSheet("Бен", List.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY));
         var lisSheet = new WorkSheet("Лиза", List.of(DayOfWeek.THURSDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY));
         var sheets = List.of(denSheet, benSheet, lisSheet);
         // TODO: Необходимо вывести на экран дни в которые работало более 1 человека
-        // sheets.stream()
-        // .forEach(System.out::println);
+        sheets.stream()
+                .flatMap(sheet -> sheet.getWorkDays().stream())
+                .collect(Collectors.groupingBy(
+                        day -> day,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue() > 1)
+                .map(Map.Entry::getKey)
+                .forEach(System.out::println);
     }
 }
